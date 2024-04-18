@@ -375,13 +375,13 @@ public class HashMap<K,V> extends AbstractMap<K,V>
     /**
      * Returns a power of two size for the given target capacity.
      */
-    static final int tableSizeFor(int cap) {
-        int n = cap - 1;
+    static final int tableSizeFor(int cap) { // 返回一个大于等于 cap 的最小 2 次幂（举例：如 cap = 10，返回值应该是 16）
+        int n = cap - 1; // 先减 1 是为了避免 cap 已经是 2 次幂时计算结果比预期大一倍
         n |= n >>> 1;
         n |= n >>> 2;
         n |= n >>> 4;
         n |= n >>> 8;
-        n |= n >>> 16;
+        n |= n >>> 16; // int 有 32 位二进制，因此最后右移 16 位
         return (n < 0) ? 1 : (n >= MAXIMUM_CAPACITY) ? MAXIMUM_CAPACITY : n + 1;
     }
 
@@ -448,13 +448,13 @@ public class HashMap<K,V> extends AbstractMap<K,V>
         if (initialCapacity < 0)
             throw new IllegalArgumentException("Illegal initial capacity: " +
                                                initialCapacity);
-        if (initialCapacity > MAXIMUM_CAPACITY)
+        if (initialCapacity > MAXIMUM_CAPACITY) // 最大容量
             initialCapacity = MAXIMUM_CAPACITY;
         if (loadFactor <= 0 || Float.isNaN(loadFactor))
             throw new IllegalArgumentException("Illegal load factor: " +
                                                loadFactor);
-        this.loadFactor = loadFactor;
-        this.threshold = tableSizeFor(initialCapacity);
+        this.loadFactor = loadFactor; // 初始化负载因子
+        this.threshold = tableSizeFor(initialCapacity); // 初始化阈值
     }
 
     /**
@@ -473,7 +473,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      * (16) and the default load factor (0.75).
      */
     public HashMap() {
-        this.loadFactor = DEFAULT_LOAD_FACTOR; // all other fields defaulted
+        this.loadFactor = DEFAULT_LOAD_FACTOR; // 设置默认负载因子 0.75
     }
 
     /**

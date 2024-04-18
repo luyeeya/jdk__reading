@@ -354,7 +354,7 @@ public abstract class ClassLoader {
      *          If the class was not found
      */
     public Class<?> loadClass(String name) throws ClassNotFoundException {
-        return loadClass(name, false);
+        return loadClass(name, false); // resolve 默认 false，表示不执行解析操作，则初始化也不会进行，即类变量不会初始化且静态代码块不会执行
     }
 
     /**
@@ -402,15 +402,15 @@ public abstract class ClassLoader {
         throws ClassNotFoundException
     {
         synchronized (getClassLoadingLock(name)) {
-            // First, check if the class has already been loaded
+            // 检查缓存，判断该类是否已经被加载过
             Class<?> c = findLoadedClass(name);
             if (c == null) {
                 long t0 = System.nanoTime();
                 try {
                     if (parent != null) {
-                        c = parent.loadClass(name, false);
+                        c = parent.loadClass(name, false); // 委托给父加载器加载
                     } else {
-                        c = findBootstrapClassOrNull(name);
+                        c = findBootstrapClassOrNull(name); // 如果没有父加载器，委托给启动类加载器加载
                     }
                 } catch (ClassNotFoundException e) {
                     // ClassNotFoundException thrown if class not found
@@ -418,10 +418,10 @@ public abstract class ClassLoader {
                 }
 
                 if (c == null) {
-                    // If still not found, then invoke findClass in order
-                    // to find the class.
+                    // 如果父加载器加载失败，
+                    // 由自己来尝试加载
                     long t1 = System.nanoTime();
-                    c = findClass(name);
+                    c = findClass(name); // 尝试加载
 
                     // this is the defining class loader; record the stats
                     sun.misc.PerfCounter.getParentDelegationTime().addTime(t1 - t0);
@@ -429,7 +429,7 @@ public abstract class ClassLoader {
                     sun.misc.PerfCounter.getFindClasses().increment();
                 }
             }
-            if (resolve) {
+            if (resolve) { // resolve 默认 false，表示不执行解析操作，则初始化也不会进行，即类变量不会初始化且静态代码块不会执行
                 resolveClass(c);
             }
             return c;
